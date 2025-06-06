@@ -16,8 +16,8 @@ A FastAPI-based backend service that allows users to query structured data via n
 ---
 
 ## Architecture Overview
-![NLQS Architecture Diagram]()
-![NLQS orchestratory engine]()
+![NLQS Architecture Diagram](https://github.com/ssprasad-cyber/nlqs/blob/main/architecture%20/_-%20visual%20selection.png)
+![NLQS orchestratory engine](https://github.com/ssprasad-cyber/nlqs/blob/main/architecture%20/_-%20visual%20selection%20(1).png)
 ---
 
 ## Key Modules
