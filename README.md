@@ -70,51 +70,59 @@ INSERT INTO customers (name, country, age, signup_date) VALUES
 ("Bob", "France", 34, "2020-07-22"),
 ("Charlie", "India", 25, "2022-01-12"),
 ("Diana", "Germany", 30, "2019-03-18");
-Example Requests
-SQL Query
-Request:
+```
+## Example Requests
+### SQL Query
+### Request:
 
 json
-Copy
-Edit
+```
 {
   "question": "Show me all customers from USA and India.",
   "source": "db"
 }
-Response:
+```
+### Response:
 
 json
-Copy
-Edit
+```
 {
   "intent": "sql",
   "natural_question": "Show me all customers from USA and India.",
   "generated_sql": "SELECT * FROM customers WHERE country IN ('USA', 'India');"
 }
-Document Query
-Request:
+```
+## Document Query
+### Request:
 
 json
-```{
+```
+{
   "question": "What is the main topic of the sample PDF?",
   "source": "docs"
-}```
-Response:
+}
+```
+### Response:
 
 json
-```{
+```
+{
   "intent": "rag",
   "query": "What is the main topic of the sample PDF?",
   "answer": "The main topic of the sample PDF is ..."
-}```
+}
+```
+
 ### Setup & Installation
 ## Clone the repository:
 
 bash
 
-```git clone https://github.com/ssprasad-cyber/nlqs.git
-cd nlqs```
-Create and activate a virtual environment:
+```
+git clone https://github.com/ssprasad-cyber/nlqs.git
+cd nlqs
+```
+## Create and activate a virtual environment:
 
 bash
 ```
@@ -129,13 +137,17 @@ pip install -r requirements.txt
 Set environment variables:
 ```
 bash
-```export GROQ_API_KEY="your_groq_api_key"
+```
+export GROQ_API_KEY="your_groq_api_key"
 # or for Windows PowerShell
 $env:GROQ_API_KEY="your_groq_api_key"
-Run the FastAPI server:```
+Run the FastAPI server:
+```
 
 bash
-```uvicorn app.main:app --reload```
+```
+uvicorn app.main:app --reload
+```
 Access the interactive API docs at http://localhost:8000/docs
 
 ## Notes
