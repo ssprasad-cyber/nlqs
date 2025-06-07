@@ -1,16 +1,17 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from app.core.orchestrator import handle_query
-from typing import Optional
+
 
 router = APIRouter()
 
+
 class QueryRequest(BaseModel):
     question: str
-    source: Optional[str] = None
+
 
 class QueryResponse(BaseModel):
-    result: dict
+    result: dict | str
 
 @router.post("/query", response_model=QueryResponse)
 async def query_nlqs(req: QueryRequest):

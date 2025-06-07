@@ -10,10 +10,10 @@ def classify_intent(question: str) -> Literal["sql", "rag"]:
     ]
 
     question_lower = question.lower()
-
     for keyword in keywords_sql:
-        if keyword in question_lower:
+        if f" {keyword} " in f" {question_lower} ":
             return "sql"
 
     # Default to RAG for non-structured queries
+
     return "rag"

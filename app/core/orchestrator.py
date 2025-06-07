@@ -1,30 +1,35 @@
 from app.core.intent import classify_intent
 from app.core.translator import translate_to_sql
-from app.rag.qa import answer_from_docs  # import your RAG function
+from app.core.executor import execute_sql
+from app.rag.qa import answer_from_docs
 
-async def handle_query(question: str) -> dict:
+def clean_sql(sql: str) -> str:
+    if sql.startswith("```") and sql.endswith("```"):
+        sql = sql.strip("`").strip()
+    return sql.strip()
+
+async def handle_query(question: str):
     intent = classify_intent(question)
 
     if intent == "sql":
-        sql_query = await translate_to_sql(question)
+        sql = await translate_to_sql(question)
+        sql = clean_sql(sql)
+        result = execute_sql(sql)
         return {
-            "intent": "sql",
-            "natural_question": question,
-            "generated_sql": sql_query
+            "query_type": "sql",
+            "sql_query": sql,
+            "result": result,
         }
 
     elif intent == "rag":
-        # Run the RAG document question answering and return result
-        # rag_answer = answer_from_docs(question)
-        # return {
-        #     "intent": "rag",
-        #     "query": question,
-        #     "answer": rag_answer
-        # }
-         return {
-            "intent": "rag",
-            "query": question,
-            "note": "Next step: run RAG (vector search) on documents."
+        result = answer_from_docs(question)
+        return {
+            "query_type": "rag",
+            "result": result,
         }
 
-    return {"error": "Intent detection failed."}
+    else:
+        return {
+            "query_type": "error",
+            "message": "Could not determine the query intent."
+        }

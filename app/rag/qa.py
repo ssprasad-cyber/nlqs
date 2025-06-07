@@ -1,5 +1,5 @@
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.chains import RetrievalQA
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
@@ -8,19 +8,22 @@ import os
 DB_FAISS_PATH = "vectorstore/db_faiss"
 
 def load_vectorstore():
-    embeddings = HuggingFaceEmbeddings()
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     db = FAISS.load_local(DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
     return db.as_retriever(search_kwargs={"k": 3})
 
 def answer_from_docs(query: str) -> str:
     retriever = load_vectorstore()
-    
-    # LLM setup (replace with your active LLM provider)
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
-    # Optional: custom prompt
+    llm = ChatOpenAI(
+        model="llama3-70b-8192",
+        temperature=0,
+        openai_api_key=os.getenv("GROQ_API_KEY"),
+        openai_api_base="https://api.groq.com/openai/v1"
+    )
+
     prompt_template = """You are an expert assistant. Use the following context to answer the question:
-    
+
     {context}
 
     Question: {question}
@@ -40,5 +43,5 @@ def answer_from_docs(query: str) -> str:
         return_source_documents=False,
     )
 
-    response = chain.run(query)
+    response = chain.invoke({"query": query})
     return response
