@@ -49,7 +49,7 @@ NLQS (Natural Language Query System) allows users to query both structured and u
 
 ### 🧠 Orchestration Engine Flow
 
-![NLQS Orchestration Flowchart](./architecture /_- visual selection (1).png)
+![NLQS Orchestration Flowchart](./architecture%20/_-%20visual%20selection%20(1).png)
 
 1. **Intent Detection**: 
    - Identifies whether the query is SQL-based or document-based.
