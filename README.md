@@ -1,179 +1,177 @@
-# NLQS (Natural Language Query System)
 
-A FastAPI-based backend service that allows users to query structured data via natural language questions. The system intelligently routes questions to either a SQL translator or a retrieval-augmented generation (RAG) module for document-based QA.
+# 🧠 NLQS: Natural Language Query System
 
----
-
-## Features
-
-- **Intent classification:** Automatically classify a question as SQL-based or document-based.
-- **SQL translation:** Convert natural language questions into SQL queries using a large language model (Groq API).
-- **SQL execution:** Execute generated SQL on a predefined database schema with sample data.
-- **Document QA:** Answer questions using retrieval-augmented generation on vectorized documents.
-- **Clean SQL output:** Removes markdown formatting (like backticks) from generated SQL queries.
-- **Error handling:** Detect invalid SQL or unsupported queries and provide meaningful error messages.
+NLQS (Natural Language Query System) allows users to query both structured and unstructured data using natural language. It intelligently determines whether a user query requires SQL translation or retrieval-augmented generation (RAG) and then returns a structured, formatted result.
 
 ---
 
-## Architecture Overview
-![NLQS Architecture Diagram](https://github.com/ssprasad-cyber/nlqs/blob/main/architecture%20/_-%20visual%20selection.png)
-![NLQS orchestratory engine](https://github.com/ssprasad-cyber/nlqs/blob/main/architecture%20/_-%20visual%20selection%20(1).png)
----
+## 📌 Project Goals
 
-## Key Modules
-
-### 1. API Routes (`app/routes/query.py`)
-
-- Endpoint: `POST /api/query`
-- Accepts JSON: `{ "question": "string", "source": "db" | "docs" }`
-- Calls orchestrator to handle query and returns structured JSON response.
-
-### 2. Orchestrator (`app/core/orchestrator.py`)
-
-- Coordinates flow based on source (db or docs).
-- Cleans generated SQL (removes markdown backticks).
-- Calls SQL translator and executor for database queries.
-- Calls RAG module for document question answering.
-
-### 3. Intent Classifier (`app/core/intent.py`)
-
-- Simple keyword-based intent detection.
-- Classifies queries as `"sql"` or `"rag"`.
-
-### 4. SQL Translator (`app/core/translator.py`)
-
-- Uses Groq OpenAI-compatible API with a LLM (`llama3-70b-8192`).
-- Generates SQL from natural language question.
-- Incorporates database schema context in prompt.
-
-### 5. Document QA (`app/rag/qa.py`)
-
-- Loads vector store using FAISS and HuggingFace embeddings.
-- Runs RetrievalQA chain with OpenAI GPT-3.5-turbo LLM.
-- Answers questions based on sample documents (e.g., PDF vector store).
+- Convert natural language questions into SQL queries or document answers.
+- Provide seamless access to structured databases and unstructured documents.
+- Deliver results in readable formats: tables, charts, and markdown.
+- Support integration with UI frameworks and API layers.
 
 ---
 
-## Sample Database Schema & Data
+## 🧩 Architecture Overview
 
-```sql
-CREATE TABLE customers (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    country TEXT,
-    age INTEGER,
-    signup_date TEXT
-);
+### 📊 Components and Tools
 
-INSERT INTO customers (name, country, age, signup_date) VALUES
-("Alice", "USA", 28, "2021-05-10"),
-("Bob", "France", 34, "2020-07-22"),
-("Charlie", "India", 25, "2022-01-12"),
-("Diana", "Germany", 30, "2019-03-18");
-```
-## Example Requests
-### SQL Query
-### Request:
+![NLQS Architecture Diagram](./assets/architecture-diagram.png)
 
-json
-```
-{
-  "question": "Show me all customers from USA and India.",
-  "source": "db"
-}
-```
-### Response:
+1. **User Interface**
+   - Frontend built with **React** or **Streamlit**.
+   - Allows users to input natural language queries.
 
-json
-```
-{
-  "intent": "sql",
-  "natural_question": "Show me all customers from USA and India.",
-  "generated_sql": "SELECT * FROM customers WHERE country IN ('USA', 'India');"
-}
-```
-## Document Query
-### Request:
+2. **API Gateway Layer**
+   - Powered by **FastAPI**, **LangServe**, or **Vercel Edge**.
+   - Acts as the entry point for external requests.
 
-json
-```
-{
-  "question": "What is the main topic of the sample PDF?",
-  "source": "docs"
-}
-```
-### Response:
+3. **Query Validator & Executor**
+   - Handles SQL execution and RAG-based answers.
+   - Supports both **structured** (database) and **unstructured** (documents) queries.
 
-json
-```
-{
-  "intent": "rag",
-  "query": "What is the main topic of the sample PDF?",
-  "answer": "The main topic of the sample PDF is ..."
-}
-```
+4. **NLQS Orchestration Engine**
+   - Responsible for:
+     - Intent Classification
+     - Prompt Construction
+     - SQL Translation (LLM-based)
+   - Acts as the decision-maker for which processing path to take.
 
-### Setup & Installation
-## Clone the repository:
+5. **Response Formatter**
+   - Converts query results into JSON, Markdown, or tabular formats.
 
-bash
+6. **Final UI Renderer**
+   - Displays final output using tables, CSV downloads, or chart components.
 
-```
-git clone https://github.com/ssprasad-cyber/nlqs.git
+---
+
+### 🧠 Orchestration Engine Flow
+
+![NLQS Orchestration Flowchart](./assets/orchestration-flowchart.png)
+
+1. **Intent Detection**: 
+   - Identifies whether the query is SQL-based or document-based.
+2. **SQL Path**:
+   - Passes through SQL generator → executed on database → returns structured response.
+3. **RAG Path**:
+   - Passes through LLM + vector DBs like **LlamaIndex** or **LangChain** → returns contextual document answer.
+
+---
+
+## ⚙️ Tech Stack
+
+| Layer                 | Technology           | Why Chosen                                       |
+|----------------------|----------------------|--------------------------------------------------|
+| Frontend             | React / Streamlit    | Fast rendering and interactive UX                |
+| Backend              | FastAPI              | High performance and asynchronous API support    |
+| Orchestration        | Python, LangChain    | Flexibility with LLM tools and RAG workflows     |
+| Embeddings           | HuggingFace Models   | Local model control and cost efficiency          |
+| LLM Translation      | Groq API             | Fast, affordable, and OpenAI-compatible          |
+| PDF Processing       | PyMuPDF              | Lightweight and efficient for unstructured docs  |
+| Database             | SQLite               | Simple for prototyping structured queries        |
+
+---
+
+## 🚀 How It Works
+
+1. **User Inputs Question** (via UI)
+2. **Intent is Classified** as either SQL or Document (RAG)
+3. **SQL**:
+   - Converts NL → SQL using Groq or OpenAI
+   - Executes SQL query and returns rows
+4. **RAG**:
+   - Retrieves relevant chunks from embedded documents
+   - Uses LangChain or LlamaIndex to generate the answer
+5. **Formatter**: Output is presented as JSON / Markdown / Table
+
+---
+
+## 🛠️ Setup Instructions
+
+### 1. Clone the Repo
+
+```bash
+git clone https://github.com/yourusername/nlqs.git
 cd nlqs
 ```
-## Create and activate a virtual environment:
 
-bash
-```
-python3 -m venv venv
-source venv/bin/activate  # Linux/macOS
-venv\Scripts\activate     # Windows
-Install dependencies:
-```
-bash
-```
+### 2. Install Dependencies
+
+```bash
 pip install -r requirements.txt
-Set environment variables:
-```
-bash
-```
-export GROQ_API_KEY="your_groq_api_key"
-# or for Windows PowerShell
-$env:GROQ_API_KEY="your_groq_api_key"
-Run the FastAPI server:
 ```
 
-bash
+> Ensure Python 3.10+ is used.
+
+### 3. Environment Variables
+
+Create a `.env` file with the following:
+
 ```
+OPENAI_API_KEY=your-api-key
+GROQ_API_KEY=your-groq-api-key
+```
+
+### 4. Start Server
+
+```bash
 uvicorn app.main:app --reload
 ```
-Access the interactive API docs at http://localhost:8000/docs
 
-## Notes
-- The SQL translation relies on a Groq LLM API key and endpoint.
+---
 
-- Document QA requires a pre-built vector store with documents indexed.
+## 📡 API Endpoints
 
-- Intent classification is keyword-based and can be improved with an LLM classifier.
+| Method | Endpoint       | Description                        |
+|--------|----------------|------------------------------------|
+| POST   | `/api/query`   | Accepts a natural language question |
+| Body   | `{ "question": "..." }` | |
 
-- SQL queries are cleaned to remove formatting artifacts before execution.
+**Sample Request:**
 
-- Error handling is implemented for invalid SQL and unsupported queries.
+```json
+{
+  "question": "List all customers from USA and India"
+}
+```
 
-## Future Work
-- Improve intent classification using an LLM.
+**Sample Response:**
 
-- Enhance error handling and feedback.
+```json
+{
+  "query_type": "sql",
+  "sql_query": "SELECT * FROM customers WHERE country IN ('USA', 'India');",
+  "result": {
+    "columns": ["id", "name", "country", "age", "signup_date"],
+    "rows": [[1, "Alice", "USA", 28, "2021-05-10"], [3, "Charlie", "India", 25, "2022-01-12"]],
+    "summary": "2 rows returned."
+  }
+}
+```
 
-- Support more complex database schemas.
+---
 
-- Add user authentication and request logging.
+## 💡 Future Improvements
 
-- Integrate asynchronous execution for database and vector queries.
+- ✅ Add support for multiple file types (PDF, DOCX, HTML).
+- ✅ Use advanced LLMs (Groq, Claude, Gemini) as fallbacks.
+- 🔄 Integrate user authentication and usage limits.
+- 📊 Build dashboard to monitor and visualize query activity.
+- 🔍 Improve intent classifier using a fine-tuned LLM model.
+- 📚 Add document chunking and hybrid search scoring.
 
-- Expand document vector store with more diverse data.
+---
 
-## License
-MIT License
+## 👨‍💻 Contributing
 
+Contributions welcome! Please open issues or pull requests for improvements.
+
+---
+
+## 📄 License
+
+MIT License © 2025
+
+---
