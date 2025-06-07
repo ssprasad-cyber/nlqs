@@ -18,7 +18,7 @@ NLQS (Natural Language Query System) allows users to query both structured and u
 
 ### 📊 Components and Tools
 
-![NLQS Architecture Diagram](./assets/architecture-diagram.png)
+![NLQS Architecture Diagram](./architecture%20/_-%20visual%20selection.png)
 
 1. **User Interface**
    - Frontend built with **React** or **Streamlit**.
@@ -49,7 +49,7 @@ NLQS (Natural Language Query System) allows users to query both structured and u
 
 ### 🧠 Orchestration Engine Flow
 
-![NLQS Orchestration Flowchart](./assets/orchestration-flowchart.png)
+![NLQS Orchestration Flowchart](./architecture /_- visual selection (1).png)
 
 1. **Intent Detection**: 
    - Identifies whether the query is SQL-based or document-based.
@@ -93,7 +93,7 @@ NLQS (Natural Language Query System) allows users to query both structured and u
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/yourusername/nlqs.git
+git https://github.com/ssprasad-cyber/nlqs.git
 cd nlqs
 ```
 
